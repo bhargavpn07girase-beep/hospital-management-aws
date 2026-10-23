@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Appointments Management{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div>
+        <h1 class="content-title">Appointments</h1>
+        <p class="content-subtitle">View and manage patient consultations and doctor schedules</p>
+    </div>
+    <a href="{{ url_for('book_appointment') }}" class="btn btn-primary" id="btn-schedule-new">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Book Appointment
+    </a>
+</div>
+
+<!-- Filters and Search Toolbar matching Screen 6 -->
+<div class="toolbar-container">
+    <form method="GET" action="{{ url_for('appointments') }}" style="display: flex; gap: 12px; flex-wrap: wrap; width: 100%; align-items: center;">
+        <!-- Status Filter -->
+        <select name="status" class="form-select" onchange="this.form.submit()">
+            <option value="All" {% if selected_status == 'All' %}selected{% endif %}>All Status</option>
+            <option value="Confirmed" {% if selected_status == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+            <option value="Pending" {% if selected_status == 'Pending' %}selected{% endif %}>Pending</option>
+            <option value="Completed" {% if selected_status == 'Completed' %}selected{% endif %}>Completed</option>
+            <option value="Cancelled" {% if selected_status == 'Cancelled' %}selected{% endif %}>Cancelled</option>
+        </select>
+
+        <!-- Doctor Filter -->
+        <select name="doctor_id" class="form-select" onchange="this.form.submit()">
+            <option value="All" {% if selected_doctor == 'All' %}selected{% endif %}>All Doctors</option>
+            {% for doc in doctors %}
+                <option value="{{ doc.id }}" {% if selected_doctor|string == doc.id|string %}selected{% endif %}>
+                    {{ doc.full_name }} ({{ doc.specialty }})
+                </option>
+            {% endfor %}
+        </select>
+
+        <!-- Search Input -->
+        <div class="search-input-wrap" style="flex: 1; min-width: 220px;">
+            <span class="search-icon">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+            </span>
+            <input type="text" name="q" value="{{ query }}" class="search-input" id="clientTableSearch" placeholder="Search by patient, doctor, or code...">
+        </div>
+
+        {% if selected_status != 'All' or selected_doctor != 'All' or query %}
+            <a href="{{ url_for('appointments') }}" class="btn btn-secondary" style="padding: 8px 14px; font-size: 13px;">
+                Reset Filters
+            </a>
+        {% endif %}
+    </form>
+</div>
+
+<!-- Appointments Table Card -->
+<div class="card">
+    <div class="table-responsive">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Patient</th>
+                    <th>Doctor</th>
+                    <th>Date & Time</th>
+                    <th>Reason</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appt in appointments %}
+                <tr>
+                    <td style="font-weight: 700; color: var(--teal-primary);">{{ appt.appointment_code }}</td>
+                    <td style="font-weight: 600;">{{ appt.patient_name }}</td>
+                    <td>{{ appt.doctor_name }}</td>
+                    <td style="font-size: 13px; color: var(--text-secondary);">
+                        {{ appt.appointment_date }} <span style="color: var(--text-muted);">&bull;</span> {{ appt.appointment_time }}
+                    </td>
+                    <td style="font-size: 13px; max-width: 200px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="{{ appt.reason }}">
+                        {{ appt.reason if appt.reason else '-' }}
+                    </td>
+                    <td>
+                        {% if appt.status == 'Confirmed' %}
+                            <span class="badge badge-confirmed">Confirmed</span>
+                        {% elif appt.status == 'Pending' %}
+                            <span class="badge badge-pending">Pending</span>
+                        {% elif appt.status == 'Completed' %}
+                            <span class="badge badge-completed">Completed</span>
+                        {% elif appt.status == 'Cancelled' %}
+                            <span class="badge badge-cancelled">Cancelled</span>
+                        {% else %}
+                            <span class="badge">{{ appt.status }}</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="table-actions">
+                            <!-- Quick Update Status Dropdown Form -->
+                            <form method="POST" action="{{ url_for('update_appointment_status', appointment_id=appt.id) }}" style="display:inline-flex; align-items:center;">
+                                <select name="status" class="form-select" onchange="this.form.submit()" style="padding: 4px 8px; font-size: 12px; height: 28px;">
+                                    <option value="" disabled selected>Update</option>
+                                    <option value="Confirmed">Confirmed</option>
+                                    <option value="Completed">Completed</option>
+                                    <option value="Cancelled">Cancelled</option>
+                                    <option value="Pending">Pending</option>
+                                </select>
+                            </form>
+
+                            <!-- Cancel Button Form -->
+                            {% if appt.status != 'Cancelled' %}
+                            <form method="POST" action="{{ url_for('update_appointment_status', appointment_id=appt.id) }}" onsubmit="return confirm('Cancel appointment {{ appt.appointment_code }}?');" style="display:inline;">
+                                <input type="hidden" name="status" value="Cancelled">
+                                <button type="submit" class="btn btn-action-delete" title="Cancel Appointment">Cancel</button>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                        No appointments found matching your search.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

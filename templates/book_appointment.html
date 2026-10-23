@@ -1,0 +1,149 @@
+{% extends "base.html" %}
+
+{% block title %}Book Appointment - Hospital Management System{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div>
+        <h1 class="content-title">Book Appointment</h1>
+        <p class="content-subtitle">Schedule an appointment with your preferred doctor</p>
+    </div>
+    <a href="{{ url_for('appointments') }}" class="btn btn-secondary">
+        &larr; View Appointments
+    </a>
+</div>
+
+<!-- Two-Column Layout matching Screen 5 -->
+<div class="booking-layout">
+    <!-- Left: Appointment Booking Form -->
+    <div class="card">
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('book_appointment') }}">
+                <!-- Patient Select -->
+                <div class="form-group">
+                    <label class="form-label" for="patient_id">Patient *</label>
+                    <select id="patient_id" name="patient_id" class="form-control" required>
+                        <option value="" disabled selected>Select Patient</option>
+                        {% for p in patients %}
+                            <option value="{{ p.id }}">
+                                {{ p.full_name }} ({{ p.patient_code }}) &bull; Phone: {{ p.phone }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Doctor Select -->
+                <div class="form-group">
+                    <label class="form-label" for="doctor_id">Doctor *</label>
+                    <select id="doctor_id" name="doctor_id" class="form-control" required>
+                        <option value="" disabled selected>Select Doctor</option>
+                        {% for doc in doctors %}
+                            <option value="{{ doc.id }}">
+                                {{ doc.full_name }} &bull; {{ doc.specialty }} ({{ doc.department }})
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Date & Time Row -->
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="appointment_date">Appointment Date *</label>
+                        <input type="date" id="appointment_date" name="appointment_date" class="form-control" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="appointment_time">Appointment Time *</label>
+                        <select id="appointment_time" name="appointment_time" class="form-control" required>
+                            <option value="" disabled selected>Select Time Slot</option>
+                            <option value="09:00 AM">09:00 AM</option>
+                            <option value="09:30 AM">09:30 AM</option>
+                            <option value="10:00 AM">10:00 AM</option>
+                            <option value="10:30 AM">10:30 AM</option>
+                            <option value="11:00 AM">11:00 AM</option>
+                            <option value="11:30 AM">11:30 AM</option>
+                            <option value="02:00 PM">02:00 PM</option>
+                            <option value="02:30 PM">02:30 PM</option>
+                            <option value="03:00 PM">03:00 PM</option>
+                            <option value="03:30 PM">03:30 PM</option>
+                            <option value="04:00 PM">04:00 PM</option>
+                            <option value="04:30 PM">04:30 PM</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Reason for Visit -->
+                <div class="form-group">
+                    <label class="form-label" for="reason">Reason (Optional)</label>
+                    <textarea id="reason" name="reason" class="form-control" rows="3" placeholder="Enter reason for visit, symptoms, or consultation notes..."></textarea>
+                </div>
+
+                <!-- Action Buttons matching Screen 5 -->
+                <div class="form-actions">
+                    <a href="{{ url_for('appointments') }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary" id="btn-submit-appointment">
+                        Book Appointment
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Right: Available Doctors Preview Panel matching Screen 5 -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Available Doctors</h3>
+            <span style="font-size: 12px; color: var(--teal-primary); font-weight: 600;">Click to Select</span>
+        </div>
+        <div class="card-body" style="padding: 16px;">
+            {% for doc in doctors %}
+            <div class="available-doctor-item" data-doctor-id="{{ doc.id }}" title="Click to choose this doctor">
+                <div class="available-doctor-left">
+                    <div class="doctor-mini-avatar">
+                        {{ doc.full_name.split(' ')[-1][0] if doc.full_name else 'D' }}
+                    </div>
+                    <div>
+                        <div style="font-size: 14px; font-weight: 700; color: var(--text-primary);">{{ doc.full_name }}</div>
+                        <div style="font-size: 12px; color: var(--teal-primary);">{{ doc.specialty }}</div>
+                    </div>
+                </div>
+                <div style="color: var(--text-muted); font-size: 18px;">&rsaquo;</div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Set default date to today
+    const dateInput = document.getElementById('appointment_date');
+    if (dateInput) {
+        const today = new Date().toISOString().split('T')[0];
+        dateInput.min = today;
+        dateInput.value = today;
+    }
+
+    // Check query params if pre-selected
+    const urlParams = new URLSearchParams(window.location.search);
+    const preDoc = urlParams.get('doctor_id');
+    const prePatient = urlParams.get('patient_id');
+
+    if (preDoc) {
+        const docSelect = document.getElementById('doctor_id');
+        if (docSelect) docSelect.value = preDoc;
+        const matchingCard = document.querySelector(`.available-doctor-item[data-doctor-id="${preDoc}"]`);
+        if (matchingCard) {
+            matchingCard.style.borderColor = 'var(--teal-primary)';
+            matchingCard.style.backgroundColor = '#f0fdfa';
+        }
+    }
+    if (prePatient) {
+        const patientSelect = document.getElementById('patient_id');
+        if (patientSelect) patientSelect.value = prePatient;
+    }
+});
+</script>
+{% endblock %}

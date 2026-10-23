@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}{{ action }} Doctor - Hospital Management System{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div>
+        <h1 class="content-title">{{ action }} Doctor</h1>
+        <p class="content-subtitle">Add a physician to the hospital medical staff directory</p>
+    </div>
+    <a href="{{ url_for('doctors') }}" class="btn btn-secondary">
+        &larr; Back to Directory
+    </a>
+</div>
+
+<div class="card" style="max-width: 860px; margin: 0 auto;">
+    <div class="card-body">
+        <form method="POST">
+            <div class="form-grid-2">
+                <!-- Full Name -->
+                <div class="form-group">
+                    <label class="form-label" for="full_name">Doctor Full Name *</label>
+                    <input type="text" id="full_name" name="full_name" class="form-control" placeholder="e.g. Dr. Kavita Deshmukh" value="{{ doctor.full_name if doctor else '' }}" required>
+                </div>
+
+                <!-- Specialty -->
+                <div class="form-group">
+                    <label class="form-label" for="specialty">Specialty *</label>
+                    <input type="text" id="specialty" name="specialty" class="form-control" placeholder="e.g. Cardiologist, Neurologist" value="{{ doctor.specialty if doctor else '' }}" required>
+                </div>
+
+                <!-- Qualification -->
+                <div class="form-group">
+                    <label class="form-label" for="qualification">Qualifications *</label>
+                    <input type="text" id="qualification" name="qualification" class="form-control" placeholder="e.g. MBBS, MD, DM" value="{{ doctor.qualification if doctor else '' }}" required>
+                </div>
+
+                <!-- Department -->
+                <div class="form-group">
+                    <label class="form-label" for="department">Department *</label>
+                    <select id="department" name="department" class="form-control" required>
+                        <option value="" disabled {% if not doctor %}selected{% endif %}>Select department</option>
+                        <option value="Cardiology">Cardiology</option>
+                        <option value="General Medicine">General Medicine</option>
+                        <option value="Pediatrics">Pediatrics</option>
+                        <option value="Orthopedics">Orthopedics</option>
+                        <option value="Gynecology">Gynecology</option>
+                        <option value="Dermatology">Dermatology</option>
+                        <option value="Neurology">Neurology</option>
+                        <option value="Oncology">Oncology</option>
+                    </select>
+                </div>
+
+                <!-- Experience -->
+                <div class="form-group">
+                    <label class="form-label" for="experience">Years of Experience</label>
+                    <input type="number" id="experience" name="experience" class="form-control" min="1" max="60" value="{{ doctor.experience if doctor else '8' }}">
+                </div>
+
+                <!-- Consulting Hours -->
+                <div class="form-group">
+                    <label class="form-label" for="consulting_hours">Consulting Hours</label>
+                    <input type="text" id="consulting_hours" name="consulting_hours" class="form-control" value="{{ doctor.consulting_hours if doctor else '09:00 AM - 05:00 PM' }}">
+                </div>
+
+                <!-- Phone -->
+                <div class="form-group">
+                    <label class="form-label" for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" class="form-control" placeholder="e.g. 9876543210" value="{{ doctor.phone if doctor else '' }}">
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label class="form-label" for="email">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="e.g. doctor@hospital.com" value="{{ doctor.email if doctor else '' }}">
+                </div>
+            </div>
+
+            <div class="form-actions">
+                <a href="{{ url_for('doctors') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">Save Doctor Profile</button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

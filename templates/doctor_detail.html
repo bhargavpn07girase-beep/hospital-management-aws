@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}Dr. {{ doctor.full_name }} - Profile{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div>
+        <h1 class="content-title">{{ doctor.full_name }}</h1>
+        <p class="content-subtitle">{{ doctor.specialty }} &bull; {{ doctor.department }} Department</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <a href="{{ url_for('doctors') }}" class="btn btn-secondary">&larr; Back to Doctors</a>
+        <a href="{{ url_for('edit_doctor', doctor_id=doctor.id) }}" class="btn btn-secondary">Edit</a>
+        <form method="POST" action="{{ url_for('delete_doctor', doctor_id=doctor.id) }}" onsubmit="return confirm('Remove Dr. {{ doctor.full_name }} from directory?');" style="display:inline;">
+            <button type="submit" class="btn btn-action-delete" style="height: 100%; padding: 8px 14px;">Delete</button>
+        </form>
+        <a href="{{ url_for('book_appointment') }}?doctor_id={{ doctor.id }}" class="btn btn-primary">+ Schedule Appointment</a>
+    </div>
+</div>
+
+<div class="card" style="max-width: 800px; margin: 0 auto;">
+    <div class="card-body" style="text-align: center; padding: 40px;">
+        <div class="doctor-avatar-circle" style="width: 100px; height: 100px; font-size: 36px; margin: 0 auto 18px;">
+            {{ doctor.full_name.split(' ')[-1][0] if doctor.full_name else 'D' }}
+        </div>
+        <h2 style="font-size: 22px; font-weight: 800; color: var(--text-primary); margin-bottom: 4px;">{{ doctor.full_name }}</h2>
+        <div style="font-size: 15px; font-weight: 600; color: var(--teal-primary); margin-bottom: 6px;">{{ doctor.specialty }} ({{ doctor.department }})</div>
+        <div style="font-size: 13px; color: var(--text-secondary); margin-bottom: 24px;">{{ doctor.qualification }} &bull; Code: <strong>{{ doctor.doctor_code }}</strong></div>
+
+        <div style="text-align: left; max-width: 500px; margin: 0 auto; background: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 20px;">
+            <div class="info-list-row">
+                <span style="color: var(--text-secondary);">Clinical Experience</span>
+                <strong>{{ doctor.experience }} Years</strong>
+            </div>
+            <div class="info-list-row">
+                <span style="color: var(--text-secondary);">Consultation Hours</span>
+                <span>{{ doctor.consulting_hours }}</span>
+            </div>
+            <div class="info-list-row">
+                <span style="color: var(--text-secondary);">Direct Contact Phone</span>
+                <span>{{ doctor.phone if doctor.phone else '+91 98765 43210' }}</span>
+            </div>
+            <div class="info-list-row">
+                <span style="color: var(--text-secondary);">Hospital Email</span>
+                <span>{{ doctor.email if doctor.email else 'physician@hospital.com' }}</span>
+            </div>
+            <div class="info-list-row">
+                <span style="color: var(--text-secondary);">Availability Status</span>
+                <span class="badge badge-confirmed">Available for Consultations</span>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

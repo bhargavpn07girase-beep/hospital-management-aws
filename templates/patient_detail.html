@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block title %}Patient Profile - {{ patient.full_name }}{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div>
+        <h1 class="content-title">{{ patient.full_name }}</h1>
+        <p class="content-subtitle">Patient ID: <strong style="color: var(--teal-primary);">{{ patient.patient_code }}</strong> &bull; Registered on {{ patient.created_at[:10] }}</p>
+    </div>
+    <div style="display: flex; gap: 10px;">
+        <a href="{{ url_for('edit_patient', patient_id=patient.id) }}" class="btn btn-secondary">
+            Edit Details
+        </a>
+        <a href="{{ url_for('book_appointment') }}?patient_id={{ patient.id }}" class="btn btn-primary">
+            + Schedule Appointment
+        </a>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    <!-- Patient Medical Profile Card -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Demographics & Contact Information</h3>
+        </div>
+        <div class="card-body">
+            <div class="info-list-row">
+                <span style="color: var(--text-secondary);">Full Name</span>
+                <strong>{{ patient.full_name }}</strong>
+            </div>
+            <div class="info-list-row">
+                <span style="color: var(--text-secondary);">Age & Gender</span>
+                <span>{{ patient.age }} years &bull; {{ patient.gender }}</span>
+            </div>
+            <div class="info-list-row">
+                <span style="color: var(--text-secondary);">Phone Number</span>
+                <span>{{ patient.phone }}</span>
+            </div>
+            <div class="info-list-row">
+                <span style="color: var(--text-secondary);">Email</span>
+                <span>{{ patient.email if patient.email else 'Not provided' }}</span>
+            </div>
+            <div class="info-list-row">
+                <span style="color: var(--text-secondary);">Residential Address</span>
+                <span>{{ patient.address if patient.address else 'Not provided' }}</span>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <h4 style="font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 8px;">Medical History & Diagnoses</h4>
+                <div style="background-color: #f8fafc; border: 1px solid var(--border-color); border-radius: var(--radius-md); padding: 14px; font-size: 14px; color: var(--text-secondary);">
+                    {{ patient.medical_history if patient.medical_history else 'No previous chronic conditions or allergies recorded.' }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Appointment History Card -->
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Appointment History</h3>
+        </div>
+        <div class="table-responsive">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Code</th>
+                        <th>Doctor</th>
+                        <th>Date & Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for appt in appointments %}
+                    <tr>
+                        <td style="font-weight: 600; color: var(--teal-primary);">{{ appt.appointment_code }}</td>
+                        <td>{{ appt.doctor_name }}</td>
+                        <td style="font-size: 13px;">{{ appt.appointment_date }} {{ appt.appointment_time }}</td>
+                        <td>
+                            {% if appt.status == 'Confirmed' %}
+                                <span class="badge badge-confirmed">Confirmed</span>
+                            {% elif appt.status == 'Pending' %}
+                                <span class="badge badge-pending">Pending</span>
+                            {% elif appt.status == 'Completed' %}
+                                <span class="badge badge-completed">Completed</span>
+                            {% else %}
+                                <span class="badge badge-cancelled">{{ appt.status }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: var(--text-muted); padding: 30px;">
+                            No appointments on file for this patient.
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

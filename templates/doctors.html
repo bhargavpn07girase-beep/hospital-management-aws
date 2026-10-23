@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Doctors Directory{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div>
+        <h1 class="content-title">Doctors</h1>
+        <p class="content-subtitle">Our experienced medical professionals</p>
+    </div>
+    <a href="{{ url_for('add_doctor') }}" class="btn btn-primary" id="btn-add-doctor">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Add Doctor
+    </a>
+</div>
+
+<!-- Search & Department Filter Toolbar -->
+<div class="toolbar-container">
+    <form method="GET" action="{{ url_for('doctors') }}" class="search-input-wrap">
+        <span class="search-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+        </span>
+        <input type="text" name="q" value="{{ query }}" class="search-input" placeholder="Search by name or department...">
+    </form>
+
+    <div class="filter-group">
+        <form method="GET" action="{{ url_for('doctors') }}" id="deptFilterForm">
+            <input type="hidden" name="q" value="{{ query }}">
+            <select name="dept" class="form-select" onchange="document.getElementById('deptFilterForm').submit()">
+                <option value="All" {% if selected_dept == 'All' %}selected{% endif %}>All Departments</option>
+                <option value="Cardiology" {% if selected_dept == 'Cardiology' %}selected{% endif %}>Cardiology</option>
+                <option value="General Medicine" {% if selected_dept == 'General Medicine' %}selected{% endif %}>General Medicine</option>
+                <option value="Pediatrics" {% if selected_dept == 'Pediatrics' %}selected{% endif %}>Pediatrics</option>
+                <option value="Orthopedics" {% if selected_dept == 'Orthopedics' %}selected{% endif %}>Orthopedics</option>
+                <option value="Gynecology" {% if selected_dept == 'Gynecology' %}selected{% endif %}>Gynecology</option>
+                <option value="Dermatology" {% if selected_dept == 'Dermatology' %}selected{% endif %}>Dermatology</option>
+                <option value="Neurology" {% if selected_dept == 'Neurology' %}selected{% endif %}>Neurology</option>
+                <option value="Oncology" {% if selected_dept == 'Oncology' %}selected{% endif %}>Oncology</option>
+            </select>
+        </form>
+    </div>
+</div>
+
+<!-- 3-Column Doctors Grid matching Screen 4 -->
+<div class="doctors-grid">
+    {% for doc in doctors %}
+    <div class="doctor-card">
+        <div class="doctor-avatar-circle">
+            {{ doc.full_name.split(' ')[-1][0] if doc.full_name else 'D' }}
+        </div>
+        <h3 class="doctor-name">{{ doc.full_name }}</h3>
+        <span class="doctor-specialty">{{ doc.specialty }}</span>
+        <span class="doctor-qualification">{{ doc.qualification }}</span>
+
+        <div style="margin-top: auto; width: 100%; display: flex; gap: 8px;">
+            <a href="{{ url_for('view_doctor', doctor_id=doc.id) }}" class="btn btn-action-view" style="flex: 1; padding: 8px; font-size: 13px;">
+                View Profile
+            </a>
+            <a href="{{ url_for('book_appointment') }}?doctor_id={{ doc.id }}" class="btn btn-primary" style="padding: 8px 12px; font-size: 13px;" title="Book Appointment">
+                Book
+            </a>
+        </div>
+    </div>
+    {% else %}
+    <div style="grid-column: 1 / -1; text-align: center; padding: 40px; background: white; border-radius: var(--radius-lg); border: 1px solid var(--border-color);">
+        <p style="color: var(--text-muted); font-size: 15px;">No doctors found matching the selected filter.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

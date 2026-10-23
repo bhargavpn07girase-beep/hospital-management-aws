@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{% block title %}Settings - Hospital Management System{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div>
+        <h1 class="content-title">Settings</h1>
+        <p class="content-subtitle">Manage your account and application settings</p>
+    </div>
+</div>
+
+<!-- Tab Navigation matching Screen 9 -->
+<div class="settings-tabs">
+    <button type="button" class="settings-tab-btn active" data-tab="tab-profile">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -2px; margin-right: 4px;">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+        </svg>
+        Profile
+    </button>
+    <button type="button" class="settings-tab-btn" data-tab="tab-security">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -2px; margin-right: 4px;">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+        </svg>
+        Security
+    </button>
+    <button type="button" class="settings-tab-btn" data-tab="tab-aws">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -2px; margin-right: 4px;">
+            <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+            <path d="M12 12v9"></path>
+            <path d="m16 16-4-4-4 4"></path>
+        </svg>
+        AWS S3 & Cloud
+    </button>
+    <button type="button" class="settings-tab-btn" data-tab="tab-system">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="vertical-align: -2px; margin-right: 4px;">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+        </svg>
+        System
+    </button>
+</div>
+
+<!-- Tab 1: Profile (matching Screen 9) -->
+<div class="tab-pane active" id="tab-profile">
+    <div class="card" style="max-width: 760px;">
+        <div class="card-body">
+            <div style="display: flex; align-items: center; gap: 20px; margin-bottom: 28px; padding-bottom: 24px; border-bottom: 1px solid var(--border-color);">
+                <div class="user-avatar" style="width: 72px; height: 72px; font-size: 28px; font-weight: 700;">
+                    {{ user.full_name[0] if user.full_name else 'A' }}
+                </div>
+                <div>
+                    <h3 style="font-size: 18px; font-weight: 700; color: var(--text-primary); margin-bottom: 2px;">{{ user.full_name }}</h3>
+                    <p style="font-size: 13px; color: var(--text-secondary);">Username: <code>{{ user.username }}</code> &bull; Role: {{ user.role }}</p>
+                </div>
+            </div>
+
+            <form method="POST" action="{{ url_for('update_profile') }}">
+                <div class="form-grid-2">
+                    <div class="form-group">
+                        <label class="form-label" for="full_name">Full Name *</label>
+                        <input type="text" id="full_name" name="full_name" class="form-control" value="{{ user.full_name }}" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label" for="email">Email *</label>
+                        <input type="email" id="email" name="email" class="form-control" value="{{ user.email }}" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Role</label>
+                    <input type="text" class="form-control" value="{{ user.role }}" disabled style="background: #f8fafc; cursor: not-allowed;">
+                    <small style="font-size: 11px; color: var(--text-muted); margin-top: 4px; display: block;">Administrator permissions are managed via system policy.</small>
+                </div>
+
+                <button type="submit" class="btn btn-primary" id="btn-update-profile" style="margin-top: 10px;">
+                    Update Profile
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Tab 2: Security (Password Change) -->
+<div class="tab-pane" id="tab-security">
+    <div class="card" style="max-width: 650px;">
+        <div class="card-header">
+            <h3 class="card-title">Change Password</h3>
+        </div>
+        <div class="card-body">
+            <form method="POST" action="{{ url_for('change_password') }}">
+                <div class="form-group">
+                    <label class="form-label" for="current_password">Current Password *</label>
+                    <input type="password" id="current_password" name="current_password" class="form-control" placeholder="Enter current password" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="new_password">New Password *</label>
+                    <input type="password" id="new_password" name="new_password" class="form-control" placeholder="Minimum 6 characters" required>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="confirm_password">Confirm New Password *</label>
+                    <input type="password" id="confirm_password" name="confirm_password" class="form-control" placeholder="Re-type new password" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">
+                    Update Password
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Tab 3: AWS S3 & Cloud Architecture -->
+<div class="tab-pane" id="tab-aws">
+    <div class="card" style="max-width: 800px; margin-bottom: 24px;">
+        <div class="card-header">
+            <h3 class="card-title">Amazon S3 Configuration & Diagnostics</h3>
+            <span class="badge badge-s3-private">Private / Block Public Access</span>
+        </div>
+        <div class="card-body">
+            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">
+                The application backs up the SQLite database to Amazon S3 using <strong>Boto3</strong>. In accordance with AWS best practices, no AWS credentials are hardcoded into the source code.
+            </p>
+
+            <div class="info-list-row">
+                <span style="color: var(--text-secondary);">Configured S3 Bucket</span>
+                <strong style="color: var(--teal-primary); font-family: monospace;">{{ s3_bucket }}</strong>
+            </div>
+
+            <div class="info-list-row">
+                <span style="color: var(--text-secondary);">Target AWS Region</span>
+                <span style="font-family: monospace;">{{ aws_region }}</span>
+            </div>
+
+            <div class="info-list-row">
+                <span style="color: var(--text-secondary);">Backup Folder Prefix</span>
+                <span style="font-family: monospace;">{{ s3_prefix }}</span>
+            </div>
+
+            <div class="info-list-row">
+                <span style="color: var(--text-secondary);">Server-Side Encryption</span>
+                <span>AES256 (Enforced on all uploads)</span>
+            </div>
+
+            <div class="info-list-row">
+                <span style="color: var(--text-secondary);">Public Access Configuration</span>
+                <span style="font-weight: 600; color: #15803d;">Block All Public Access (Enabled)</span>
+            </div>
+
+            <!-- Real-time Test S3 AJAX -->
+            <div style="margin-top: 24px;">
+                <button type="button" id="btnTestS3" class="btn btn-primary">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"></path>
+                        <path d="M12 12v9"></path>
+                    </svg>
+                    Test S3 Connection
+                </button>
+                <div id="testS3Result" style="display: none; margin-top: 14px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AWS Deployment Information Card -->
+    <div class="card" style="max-width: 800px;">
+        <div class="card-header">
+            <h3 class="card-title">EC2 IAM Role Authentication Strategy</h3>
+        </div>
+        <div class="card-body" style="font-size: 13px; color: var(--text-secondary); line-height: 1.6;">
+            <p style="margin-bottom: 12px;">
+                When deploying on Amazon EC2:
+            </p>
+            <ol style="margin-left: 20px; margin-bottom: 14px;">
+                <li>Create an IAM Role with a policy granting <code>s3:PutObject</code> and <code>s3:ListBucket</code> for <code>{{ s3_bucket }}</code>.</li>
+                <li>Attach this IAM Role directly to the EC2 Instance Profile.</li>
+                <li>Boto3 will automatically fetch temporary security tokens from the EC2 Instance Metadata Service (IMDS).</li>
+            </ol>
+            <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: var(--radius-md); padding: 12px; color: #15803d;">
+                <strong>Zero Secret Leakage:</strong> No access keys or secret keys reside in Git or on the server filesystem.
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tab 4: System Maintenance -->
+<div class="tab-pane" id="tab-system">
+    <div class="card" style="max-width: 760px;">
+        <div class="card-header">
+            <h3 class="card-title">College Presentation & Demo Tools</h3>
+        </div>
+        <div class="card-body">
+            <p style="font-size: 14px; color: var(--text-secondary); margin-bottom: 20px;">
+                Use the button below to reset all sample data to the original presentation state (28 fictional patients, 8 doctors, 15 appointments). This is ideal for resetting between project demo runs.
+            </p>
+
+            <form method="POST" action="{{ url_for('reset_demo_data') }}" onsubmit="return confirm('Reset all patients, doctors, and appointments to default presentation demo data?');">
+                <button type="submit" class="btn btn-secondary" style="color: #991b1b; border-color: #fecaca; background-color: #fef2f2;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path>
+                        <path d="M3 3v5h5"></path>
+                    </svg>
+                    Reset Presentation Sample Data
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

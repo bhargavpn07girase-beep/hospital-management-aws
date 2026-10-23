@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}{{ action }} Patient - Hospital Management System{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div>
+        <h1 class="content-title">{{ action }} Patient</h1>
+        <p class="content-subtitle">
+            {% if action == 'Add' %}
+                Enter patient details to create a new record
+            {% else %}
+                Update patient medical and contact information
+            {% endif %}
+        </p>
+    </div>
+    <a href="{{ url_for('patients') }}" class="btn btn-secondary">
+        &larr; Back to Patients
+    </a>
+</div>
+
+<div class="card" style="max-width: 900px; margin: 0 auto;">
+    <div class="card-body">
+        <form method="POST">
+            <div class="form-grid-2">
+                <!-- Full Name -->
+                <div class="form-group">
+                    <label class="form-label" for="full_name">Full Name *</label>
+                    <input type="text" id="full_name" name="full_name" class="form-control" placeholder="Enter full name" value="{{ patient.full_name if patient else '' }}" required>
+                </div>
+
+                <!-- Phone Number -->
+                <div class="form-group">
+                    <label class="form-label" for="phone">Phone Number *</label>
+                    <input type="tel" id="phone" name="phone" class="form-control" placeholder="Enter phone number" value="{{ patient.phone if patient else '' }}" required>
+                </div>
+
+                <!-- Age -->
+                <div class="form-group">
+                    <label class="form-label" for="age">Age *</label>
+                    <input type="number" id="age" name="age" class="form-control" placeholder="Enter age" min="0" max="130" value="{{ patient.age if patient else '' }}" required>
+                </div>
+
+                <!-- Email -->
+                <div class="form-group">
+                    <label class="form-label" for="email">Email (Optional)</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Enter email address" value="{{ patient.email if patient else '' }}">
+                </div>
+
+                <!-- Gender -->
+                <div class="form-group">
+                    <label class="form-label" for="gender">Gender *</label>
+                    <select id="gender" name="gender" class="form-control" required>
+                        <option value="" disabled {% if not patient %}selected{% endif %}>Select gender</option>
+                        <option value="Male" {% if patient and patient.gender == 'Male' %}selected{% endif %}>Male</option>
+                        <option value="Female" {% if patient and patient.gender == 'Female' %}selected{% endif %}>Female</option>
+                        <option value="Other" {% if patient and patient.gender == 'Other' %}selected{% endif %}>Other</option>
+                    </select>
+                </div>
+
+                <!-- Address -->
+                <div class="form-group">
+                    <label class="form-label" for="address">Address (Optional)</label>
+                    <input type="text" id="address" name="address" class="form-control" placeholder="Enter residential address" value="{{ patient.address if patient else '' }}">
+                </div>
+            </div>
+
+            <!-- Medical History -->
+            <div class="form-group" style="margin-top: 6px;">
+                <label class="form-label" for="medical_history">Medical History / Clinical Notes (Optional)</label>
+                <textarea id="medical_history" name="medical_history" class="form-control" rows="3" placeholder="Document prior illnesses, chronic conditions, drug allergies, or clinical notes...">{{ patient.medical_history if patient else '' }}</textarea>
+            </div>
+
+            <!-- Action Buttons matching Screen 7 -->
+            <div class="form-actions">
+                <a href="{{ url_for('patients') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary" id="btn-save-patient">
+                    Save Patient
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

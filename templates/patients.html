@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+
+{% block title %}Patients Management{% endblock %}
+
+{% block content %}
+<div class="content-header">
+    <div>
+        <h1 class="content-title">Patients</h1>
+        <p class="content-subtitle">Manage patient records and medical history</p>
+    </div>
+    <a href="{{ url_for('add_patient') }}" class="btn btn-primary" id="btn-add-patient">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="12" y1="5" x2="12" y2="19"></line>
+            <line x1="5" y1="12" x2="19" y2="12"></line>
+        </svg>
+        Add Patient
+    </a>
+</div>
+
+<!-- Search Toolbar -->
+<div class="toolbar-container">
+    <form method="GET" action="{{ url_for('patients') }}" class="search-input-wrap">
+        <span class="search-icon">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+        </span>
+        <input type="text" name="q" value="{{ query }}" class="search-input" id="clientTableSearch" placeholder="Search by name, phone or patient ID...">
+    </form>
+    <div style="font-size: 13px; color: var(--text-secondary);">
+        Total: <strong>{{ total_count }}</strong> registered patients
+    </div>
+</div>
+
+<!-- Patients Table Card -->
+<div class="card">
+    <div class="table-responsive">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Name</th>
+                    <th>Age</th>
+                    <th>Gender</th>
+                    <th>Phone</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in patients %}
+                <tr>
+                    <td style="font-weight: 700; color: var(--teal-primary);">{{ p.patient_code }}</td>
+                    <td style="font-weight: 600;">{{ p.full_name }}</td>
+                    <td>{{ p.age }}</td>
+                    <td>{{ p.gender }}</td>
+                    <td>{{ p.phone }}</td>
+                    <td>
+                        <div class="table-actions">
+                            <a href="{{ url_for('view_patient', patient_id=p.id) }}" class="btn btn-action-view" title="View Patient Details">View</a>
+                            <a href="{{ url_for('edit_patient', patient_id=p.id) }}" class="btn btn-action-edit" title="Edit Patient Record">Edit</a>
+                            <form method="POST" action="{{ url_for('delete_patient', patient_id=p.id) }}" onsubmit="return confirm('Are you sure you want to delete patient {{ p.full_name }} ({{ p.patient_code }})?');" style="display:inline;">
+                                <button type="submit" class="btn btn-action-delete" title="Delete Patient Record">Delete</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="6" style="text-align: center; color: var(--text-muted); padding: 40px;">
+                        No patients matching your search criteria.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Pagination matching Screen 3 -->
+{% if total_pages > 1 %}
+<div class="pagination">
+    {% for p_num in range(1, total_pages + 1) %}
+        <a href="{{ url_for('patients', page=p_num, q=query) }}" class="page-btn {% if p_num == page %}active{% endif %}">
+            {{ p_num }}
+        </a>
+    {% endfor %}
+</div>
+{% endif %}
+
+{% endblock %}
